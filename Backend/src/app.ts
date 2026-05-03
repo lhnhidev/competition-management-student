@@ -1,5 +1,6 @@
 import express, { Application } from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 import cors from 'cors';
 import { createServer } from 'http';
 import connectDB from './config/db';
@@ -10,7 +11,7 @@ import { bootstrapLegacyOrganization } from './utils/bootstrapLegacyOrganization
 
 const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173'];
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app: Application = express();
 const httpServer = createServer(app);

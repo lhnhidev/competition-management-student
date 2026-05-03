@@ -48,6 +48,7 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
 
   if (!transporter) {
     if (process.env.NODE_ENV !== 'production') {
+      console.warn('[OTP] SMTP not configured, falling back to dev mode');
       console.log(`[OTP DEV MODE] ${toEmail}: ${otpCode}`);
       return;
     }
@@ -78,15 +79,18 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
   let lastError: unknown;
   for (const port of portsToTry) {
     try {
+      console.log(`[OTP] Sending email to ${toEmail} via port ${port}`);
       const currentTransporter = port === primaryPort ? transporter : buildTransporter(port);
       if (!currentTransporter) {
         break;
       }
 
-      await currentTransporter.sendMail(mailPayload);
+      const result = await currentTransporter.sendMail(mailPayload);
+      console.log(`[OTP] Email accepted=${result.accepted?.length || 0} rejected=${result.rejected?.length || 0}`);
       return;
     } catch (error) {
       lastError = error;
+      console.error('[OTP] Send mail failed', error);
       if (!isRetryableConnectionError(error)) {
         throw error;
       }
