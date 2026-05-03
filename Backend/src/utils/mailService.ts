@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 
-const getTransporter = () => {
+const buildTransporter = (portOverride?: number) => {
   const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
+  const port = Number(portOverride ?? process.env.SMTP_PORT ?? 587);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
@@ -25,8 +25,23 @@ const getTransporter = () => {
   });
 };
 
+const isRetryableConnectionError = (error: unknown) => {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const typedError = error as { code?: string; command?: string };
+  return (
+    typedError.code === 'ETIMEDOUT' ||
+    typedError.code === 'ECONNREFUSED' ||
+    typedError.code === 'EHOSTUNREACH' ||
+    typedError.code === 'ENETUNREACH' ||
+    typedError.command === 'CONN'
+  );
+};
+
 export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
-  const transporter = getTransporter();
+  const transporter = buildTransporter();
 
   if (!transporter) {
     if (process.env.NODE_ENV !== 'production') {
@@ -39,7 +54,7 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
 
   const from = process.env.MAIL_FROM || process.env.SMTP_USER;
 
-  await transporter.sendMail({
+  const mailPayload = {
     from,
     to: toEmail,
     subject: 'Ma OTP xac thuc tai khoan',
@@ -52,5 +67,28 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
         <p>Vui lòng bỏ qua email này nếu có nhầm lẫn.</p>
       </div>
     `,
-  });
+  };
+
+  const primaryPort = Number(process.env.SMTP_PORT || 587);
+  const portsToTry = Array.from(new Set([primaryPort, primaryPort === 587 ? 465 : 587]));
+
+  let lastError: unknown;
+  for (const port of portsToTry) {
+    try {
+      const currentTransporter = port === primaryPort ? transporter : buildTransporter(port);
+      if (!currentTransporter) {
+        break;
+      }
+
+      await currentTransporter.sendMail(mailPayload);
+      return;
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableConnectionError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError;
 };
