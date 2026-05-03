@@ -18,6 +18,10 @@ const getTransporter = () => {
       user,
       pass,
     },
+    requireTLS: port === 587,
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
   });
 };
 
@@ -25,8 +29,12 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
   const transporter = getTransporter();
 
   if (!transporter) {
-    console.log(`[OTP DEV MODE] ${toEmail}: ${otpCode}`);
-    return;
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[OTP DEV MODE] ${toEmail}: ${otpCode}`);
+      return;
+    }
+
+    throw new Error('SMTP is not configured for production');
   }
 
   const from = process.env.MAIL_FROM || process.env.SMTP_USER;
@@ -37,11 +45,11 @@ export const sendOtpEmail = async (toEmail: string, otpCode: string) => {
     subject: 'Ma OTP xac thuc tai khoan',
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
-        <h2>Xac thuc tai khoan</h2>
-        <p>Ma OTP cua ban la:</p>
+        <h2>Xác thực tài khoản</h2>
+        <p>Mã OTP của bạn là:</p>
         <p style="font-size: 28px; letter-spacing: 6px; font-weight: bold; color: #1f5ca9;">${otpCode}</p>
-        <p>Ma co hieu luc trong <strong>5 phut</strong>.</p>
-        <p>Neu ban khong thuc hien yeu cau nay, vui long bo qua email.</p>
+        <p>Mã có hiệu lực trong <strong>5 phut</strong>.</p>
+        <p>Vui lòng bỏ qua email này nếu có nhầm lẫn.</p>
       </div>
     `,
   });
