@@ -10,6 +10,8 @@ const buildTransporter = (portOverride?: number) => {
     return null;
   }
 
+  const forceIpv4 = process.env.SMTP_FORCE_IPV4 === 'true';
+
   return nodemailer.createTransport({
     host,
     port,
@@ -18,6 +20,7 @@ const buildTransporter = (portOverride?: number) => {
       user,
       pass,
     },
+    ...(forceIpv4 ? { family: 4 } : {}),
     requireTLS: port === 587,
     connectionTimeout: 10_000,
     greetingTimeout: 10_000,
