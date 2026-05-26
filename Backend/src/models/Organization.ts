@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 export type OrganizationRole = 'admin' | 'teacher' | 'student' | 'redflag';
 export type OrganizationMemberStatus = 'approved' | 'pending';
+export type OrganizationSchoolLevel = 1 | 2 | 3;
 
 export type OrganizationMember = {
   user: mongoose.Types.ObjectId;
@@ -20,6 +21,7 @@ export type OrganizationType = {
   website?: string;
   contactEmail?: string;
   contactPhone?: string;
+  schoolLevel: OrganizationSchoolLevel;
   allowJoinByInviteWithoutApproval: boolean;
   defaultJoinRole?: OrganizationRole;
   inviteCode: string;
@@ -58,6 +60,12 @@ const OrganizationSchema: Schema = new Schema(
     website: { type: String, default: '', trim: true },
     contactEmail: { type: String, default: '', trim: true },
     contactPhone: { type: String, default: '', trim: true },
+    schoolLevel: {
+      type: Number,
+      enum: [1, 2, 3],
+      default: 3,
+      required: true,
+    },
     allowJoinByInviteWithoutApproval: { type: Boolean, default: true },
     defaultJoinRole: {
       type: String,

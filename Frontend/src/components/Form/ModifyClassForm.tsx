@@ -8,6 +8,29 @@ import useFetch from "../../hooks/useFetch";
 const { Option } = Select;
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
+const getGradesBySchoolLevel = (schoolLevel?: number) => {
+  switch (schoolLevel) {
+    case 1:
+      return [1, 2, 3, 4, 5];
+    case 2:
+      return [6, 7, 8, 9];
+    case 3:
+      return [10, 11, 12];
+    default:
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  }
+};
+
+const getActiveSchoolLevel = () => {
+  try {
+    const raw = localStorage.getItem("activeOrganization");
+    if (!raw) return undefined;
+    return JSON.parse(raw)?.schoolLevel;
+  } catch {
+    return undefined;
+  }
+};
+
 interface ClassInfo {
   _id: string;
   name: string;
@@ -41,6 +64,7 @@ const ModifyClassForm = () => {
   const [allTeachers, setAllTeachers] = useState<Teacher[]>([]);
   const [loadingTeachers, setLoadingTeachers] = useState(false);
   const { request, loading } = useFetch();
+  const gradeOptions = getGradesBySchoolLevel(getActiveSchoolLevel());
 
   // 1. Fetch danh sách giáo viên khi mở Modal
   useEffect(() => {
@@ -156,7 +180,7 @@ const ModifyClassForm = () => {
           rules={[{ required: true, message: "Vui lòng chọn khối!" }]}
         >
           <Select placeholder="Chọn khối">
-            {[6, 7, 8, 9].map((g) => (
+            {gradeOptions.map((g) => (
               <Option key={g} value={g}>
                 Khối {g}
               </Option>

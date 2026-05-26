@@ -47,7 +47,7 @@ export const getMyOrganizations = async (req: Request, res: Response) => {
 
     const organizations = await Organization.find({ 'members.user': currentUserId })
       .select(
-        'name shortName description address website contactEmail contactPhone allowJoinByInviteWithoutApproval defaultJoinRole inviteCode owner members createdAt'
+        'name shortName description address website contactEmail contactPhone schoolLevel allowJoinByInviteWithoutApproval defaultJoinRole inviteCode owner members createdAt'
       )
       .lean();
 
@@ -65,6 +65,7 @@ export const getMyOrganizations = async (req: Request, res: Response) => {
           website: org.website,
           contactEmail: org.contactEmail,
           contactPhone: org.contactPhone,
+          schoolLevel: Number(org.schoolLevel) || 3,
           inviteCode: org.inviteCode,
           allowJoinByInviteWithoutApproval: Boolean(org.allowJoinByInviteWithoutApproval),
           defaultJoinRole: org.defaultJoinRole || 'student',
@@ -102,11 +103,16 @@ export const createOrganization = async (req: Request, res: Response) => {
     const website = String(req.body?.website || '').trim();
     const contactEmail = String(req.body?.contactEmail || '').trim();
     const contactPhone = String(req.body?.contactPhone || '').trim();
+    const schoolLevelRaw = Number(req.body?.schoolLevel);
     const allowJoinByInviteWithoutApproval = Boolean(req.body?.allowJoinByInviteWithoutApproval);
     const defaultJoinRole = String(req.body?.defaultJoinRole || '').trim().toLowerCase();
 
     if (!name) {
       return res.status(400).json({ message: 'Ten to chuc la bat buoc' });
+    }
+
+    if (![1, 2, 3].includes(schoolLevelRaw)) {
+      return res.status(400).json({ message: 'Vui long chon cap truong hop le' });
     }
 
     if (allowJoinByInviteWithoutApproval) {
@@ -125,6 +131,7 @@ export const createOrganization = async (req: Request, res: Response) => {
       website,
       contactEmail,
       contactPhone,
+      schoolLevel: schoolLevelRaw,
       allowJoinByInviteWithoutApproval,
       defaultJoinRole: allowJoinByInviteWithoutApproval ? defaultJoinRole : 'student',
       inviteCode,
@@ -148,6 +155,7 @@ export const createOrganization = async (req: Request, res: Response) => {
       website: organization.website,
       contactEmail: organization.contactEmail,
       contactPhone: organization.contactPhone,
+      schoolLevel: organization.schoolLevel,
       allowJoinByInviteWithoutApproval: organization.allowJoinByInviteWithoutApproval,
       defaultJoinRole: organization.defaultJoinRole || 'student',
       inviteCode: organization.inviteCode,
@@ -421,11 +429,16 @@ export const updateOrganization = async (req: Request, res: Response) => {
     const website = String(req.body?.website || '').trim();
     const contactEmail = String(req.body?.contactEmail || '').trim();
     const contactPhone = String(req.body?.contactPhone || '').trim();
+    const schoolLevelRaw = Number(req.body?.schoolLevel);
     const allowJoinByInviteWithoutApproval = Boolean(req.body?.allowJoinByInviteWithoutApproval);
     const defaultJoinRole = String(req.body?.defaultJoinRole || '').trim().toLowerCase();
 
     if (!name) {
       return res.status(400).json({ message: 'Ten to chuc la bat buoc' });
+    }
+
+    if (!Number.isNaN(schoolLevelRaw) && ![1, 2, 3].includes(schoolLevelRaw)) {
+      return res.status(400).json({ message: 'Vui long chon cap truong hop le' });
     }
 
     if (allowJoinByInviteWithoutApproval) {
@@ -442,6 +455,9 @@ export const updateOrganization = async (req: Request, res: Response) => {
     organization.website = website;
     organization.contactEmail = contactEmail;
     organization.contactPhone = contactPhone;
+    if (!Number.isNaN(schoolLevelRaw)) {
+      organization.schoolLevel = schoolLevelRaw as any;
+    }
     organization.allowJoinByInviteWithoutApproval = allowJoinByInviteWithoutApproval;
 
     await organization.save();
@@ -455,6 +471,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
       website: organization.website,
       contactEmail: organization.contactEmail,
       contactPhone: organization.contactPhone,
+      schoolLevel: organization.schoolLevel,
       allowJoinByInviteWithoutApproval: organization.allowJoinByInviteWithoutApproval,
       defaultJoinRole: organization.defaultJoinRole || 'student',
       inviteCode: organization.inviteCode,

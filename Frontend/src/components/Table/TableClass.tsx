@@ -32,6 +32,29 @@ interface ClassInfo {
   logo: string;
 }
 
+const getGradesBySchoolLevel = (schoolLevel?: number) => {
+  switch (schoolLevel) {
+    case 1:
+      return [1, 2, 3, 4, 5];
+    case 2:
+      return [6, 7, 8, 9];
+    case 3:
+      return [10, 11, 12];
+    default:
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  }
+};
+
+const getActiveSchoolLevel = () => {
+  try {
+    const raw = localStorage.getItem("activeOrganization");
+    if (!raw) return undefined;
+    return JSON.parse(raw)?.schoolLevel;
+  } catch {
+    return undefined;
+  }
+};
+
 const ManageClassPage: React.FC = () => {
   const { loading, error, request } = useFetch<APIClassResponse[]>();
   const [classes, setClasses] = useState<ClassInfo[]>([]);
@@ -46,6 +69,8 @@ const ManageClassPage: React.FC = () => {
     setCurrentClass,
     setOpenModifyClassForm,
   } = useAppContext();
+
+  const gradeOptions = getGradesBySchoolLevel(getActiveSchoolLevel());
 
   const handleDelete = async (id: string, displayId: string) => {
     const userInfoString = localStorage.getItem("userInfo");
@@ -137,6 +162,12 @@ const ManageClassPage: React.FC = () => {
 
     fetchClasses();
   }, [request, reRenderClassTable]);
+
+  useEffect(() => {
+    if (activeTab !== "ALL" && !gradeOptions.includes(Number(activeTab))) {
+      setActiveTab("ALL");
+    }
+  }, [activeTab, gradeOptions]);
 
   const filteredClasses =
     activeTab === "ALL"
@@ -239,10 +270,10 @@ const ManageClassPage: React.FC = () => {
 
   const items = [
     { key: "ALL", label: "Tất cả" },
-    { key: "10", label: "Khối 10" },
-    { key: "11", label: "Khối 11" },
-    { key: "12", label: "Khối 12" },
-    // { key: "9", label: "Khối 9" },
+    ...gradeOptions.map((grade) => ({
+      key: String(grade),
+      label: `Khối ${grade}`,
+    })),
   ];
 
   return (

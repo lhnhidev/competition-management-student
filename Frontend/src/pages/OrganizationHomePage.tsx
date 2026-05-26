@@ -43,6 +43,7 @@ interface OrganizationItem {
   website?: string;
   contactEmail?: string;
   contactPhone?: string;
+  schoolLevel?: 1 | 2 | 3;
   inviteCode: string;
   allowJoinByInviteWithoutApproval: boolean;
   defaultJoinRole?: OrgRole;
@@ -229,6 +230,7 @@ const OrganizationHomePage: React.FC = () => {
     contactPhone?: string;
     allowJoinByInviteWithoutApproval: boolean;
     defaultJoinRole?: OrgRole;
+    schoolLevel: 1 | 2 | 3;
   }) => {
     setCreating(true);
     try {
@@ -339,6 +341,7 @@ const OrganizationHomePage: React.FC = () => {
       website: organization.website,
       contactEmail: organization.contactEmail,
       contactPhone: organization.contactPhone,
+      schoolLevel: organization.schoolLevel ?? 3,
       allowJoinByInviteWithoutApproval: organization.allowJoinByInviteWithoutApproval,
       defaultJoinRole: organization.defaultJoinRole || "student",
     });
@@ -355,6 +358,7 @@ const OrganizationHomePage: React.FC = () => {
     contactPhone?: string;
     allowJoinByInviteWithoutApproval: boolean;
     defaultJoinRole?: OrgRole;
+    schoolLevel: 1 | 2 | 3;
   }) => {
     if (!editingOrganization) return;
 
@@ -452,6 +456,7 @@ const OrganizationHomePage: React.FC = () => {
         organizationId: organization._id,
         organizationName: organization.name,
         role: organization.role,
+        schoolLevel: organization.schoolLevel ?? 3,
       }),
     );
 
@@ -602,7 +607,7 @@ const OrganizationHomePage: React.FC = () => {
         <Form
           layout="vertical"
           form={createForm}
-          initialValues={{ allowJoinByInviteWithoutApproval: true, defaultJoinRole: "student" }}
+          initialValues={{ allowJoinByInviteWithoutApproval: true, defaultJoinRole: "student", schoolLevel: 3 }}
           onFinish={onCreateOrganization}
         >
           <Form.Item
@@ -635,6 +640,21 @@ const OrganizationHomePage: React.FC = () => {
 
           <Form.Item name="contactPhone" label="Số điện thoại liên hệ">
             <Input placeholder="0123 456 789" />
+          </Form.Item>
+
+          <Form.Item
+            name="schoolLevel"
+            label="Loại trường"
+            rules={[{ required: true, message: "Vui lòng chọn loại trường" }]}
+          >
+            <Select
+              placeholder="Chọn loại trường"
+              options={[
+                { value: 1, label: "Cấp 1 (Lớp 1-5)" },
+                { value: 2, label: "Cấp 2 (Lớp 6-9)" },
+                { value: 3, label: "Cấp 3 (Lớp 10-12)" },
+              ]}
+            />
           </Form.Item>
 
           <Form.Item
@@ -710,6 +730,21 @@ const OrganizationHomePage: React.FC = () => {
 
           <Form.Item name="contactPhone" label="Số điện thoại liên hệ">
             <Input placeholder="0123 456 789" />
+          </Form.Item>
+
+          <Form.Item
+            name="schoolLevel"
+            label="Loại trường"
+            rules={[{ required: true, message: "Vui lòng chọn loại trường" }]}
+          >
+            <Select
+              placeholder="Chọn loại trường"
+              options={[
+                { value: 1, label: "Cấp 1 (Lớp 1-5)" },
+                { value: 2, label: "Cấp 2 (Lớp 6-9)" },
+                { value: 3, label: "Cấp 3 (Lớp 10-12)" },
+              ]}
+            />
           </Form.Item>
 
           <Form.Item
