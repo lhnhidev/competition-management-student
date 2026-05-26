@@ -239,10 +239,10 @@ const ManageClassPage: React.FC = () => {
 
   const items = [
     { key: "ALL", label: "Tất cả" },
-    { key: "6", label: "Khối 6" },
-    { key: "7", label: "Khối 7" },
-    { key: "8", label: "Khối 8" },
-    { key: "9", label: "Khối 9" },
+    { key: "10", label: "Khối 10" },
+    { key: "11", label: "Khối 11" },
+    { key: "12", label: "Khối 12" },
+    // { key: "9", label: "Khối 9" },
   ];
 
   return (

@@ -154,7 +154,7 @@ const AddClassForm = () => {
           rules={[{ required: true, message: "Vui lòng chọn khối!" }]}
         >
           <Select placeholder="Chọn khối học">
-            {[6, 7, 8, 9].map((grade) => (
+            {[10, 11, 12].map((grade) => (
               <Option key={grade} value={grade}>
                 Khối {grade}
               </Option>
