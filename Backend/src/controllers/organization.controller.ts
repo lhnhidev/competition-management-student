@@ -417,10 +417,10 @@ export const updateOrganization = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Khong tim thay to chuc' });
     }
 
-    const myRole = getMyRoleInOrganization(organization, String(currentUser._id));
-    if (myRole !== 'admin') {
-      return res.status(403).json({ message: 'Ban khong co quyen cap nhat to chuc' });
-    }
+    // const myRole = getMyRoleInOrganization(organization, String(currentUser._id));
+    // if (myRole !== 'admin') {
+    //   return res.status(403).json({ message: 'Ban khong co quyen cap nhat to chuc' });
+    // }
 
     const name = String(req.body?.name || '').trim();
     const shortName = String(req.body?.shortName || '').trim();
@@ -500,7 +500,7 @@ export const deleteOrganization = async (req: Request, res: Response) => {
       (member: any) =>
         String(member.user) === String(currentUser._id)
         && member.status === 'approved'
-        && member.role === 'admin'
+        // && member.role === 'admin'
     );
 
     if (!canDelete) {

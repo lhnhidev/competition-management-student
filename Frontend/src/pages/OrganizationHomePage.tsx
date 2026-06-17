@@ -482,7 +482,7 @@ const OrganizationHomePage: React.FC = () => {
                   Trang chủ tổ chức
                 </Title>
                 <Text className="!text-[var(--text-muted)]">
-                  Chọn tổ chức để vào không gian làm việc tương ứng theo quyền của bạn
+                  Chọn tổ chức để vào không gian làm việc tương ứng của bạn
                 </Text>
               </div>
             </Space>
@@ -560,25 +560,23 @@ const OrganizationHomePage: React.FC = () => {
                   </Tag>
                 </div>
 
-                {organization.role === "admin" && (
-                  <Space className="mt-3" size="small">
-                    <Button
-                      size="small"
-                      icon={<EditOutlined />}
-                      onClick={() => openEditOrganization(organization)}
-                    >
-                      Chỉnh sửa
-                    </Button>
-                    <Button
-                      size="small"
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => onDeleteOrganization(organization)}
-                    >
-                      Xóa
-                    </Button>
-                  </Space>
-                )}
+                <Space className="mt-3" size="small">
+                  <Button
+                    size="small"
+                    icon={<EditOutlined />}
+                    onClick={() => openEditOrganization(organization)}
+                  >
+                    Chỉnh sửa
+                  </Button>
+                  <Button
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => onDeleteOrganization(organization)}
+                  >
+                    Xóa
+                  </Button>
+                </Space>
 
                 <Button
                   type="primary"
