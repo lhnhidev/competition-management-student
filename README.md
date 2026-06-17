@@ -28,7 +28,7 @@
 
 ---
 
-## ➡️ [Demo Here](app-quan-ly-thi-dua.vercel.app/)
+## ➡️ [Demo Here](https://app-quan-ly-thi-dua.vercel.app/)
 
 ## 📌 Table of Contents
 * [💫 About CMS](#about)
