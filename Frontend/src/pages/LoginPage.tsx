@@ -75,6 +75,11 @@ const LoginPage: React.FC = () => {
             </Text>
           </div>
 
+          <div className="mb-5 text-center font-bold">
+            <p>Email: nhi@gmail.com</p>
+            <p>Mật khẩu: 123456</p>
+          </div>
+
           <Form
             layout="vertical"
             onFinish={onFinish}
