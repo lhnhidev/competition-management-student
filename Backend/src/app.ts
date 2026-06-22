@@ -9,7 +9,7 @@ import { initializeSocket } from './config/socket';
 import { runWithTenant } from './config/tenantContext';
 import { bootstrapLegacyOrganization } from './utils/bootstrapLegacyOrganization';
 
-const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', 'https://app-quan-ly-thi-egev778c1-lhnhidevs-projects.vercel.app'];
+const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', 'https://app-quan-ly-thi-6gvr48wgm-lhnhidevs-projects.vercel.app/'];
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
