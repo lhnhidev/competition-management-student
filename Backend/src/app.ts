@@ -9,9 +9,9 @@ import { initializeSocket } from './config/socket';
 import { runWithTenant } from './config/tenantContext';
 import { bootstrapLegacyOrganization } from './utils/bootstrapLegacyOrganization';
 
-const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', 'https://app-quan-ly-thi-45sgaizez-lhnhidevs-projects.vercel.app/'];
-
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', !process.env.LINK?.toString()];
 
 const app: Application = express();
 const httpServer = createServer(app);
