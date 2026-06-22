@@ -11,7 +11,7 @@ import { bootstrapLegacyOrganization } from './utils/bootstrapLegacyOrganization
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', !process.env.LINK?.toString()];
+const allowedOrigins = ['https://app-quan-ly-thi-dua.vercel.app', 'http://localhost:5173', 'https://competition-management-student-qzq3.vercel.app/'];
 
 const app: Application = express();
 const httpServer = createServer(app);
