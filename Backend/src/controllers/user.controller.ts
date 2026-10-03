@@ -7,6 +7,7 @@ import Class from '../models/Class';
 import RecordForm from '../models/RecordForm';
 import ResponseModel from '../models/Response';
 import Organization from '../models/Organization';
+import Teacher from '../models/Teacher';
 import { getCloudinary } from '../config/cloudinary';
 
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -414,8 +415,25 @@ export const getTrackingReport = async (req: Request, res: Response) => {
 
     // Lấy danh sách ID các lớp mà user này đang theo dõi
     // user.followingClasses lúc này là mảng các object Class do đã populate
-    const followingClassesList = user.followingClasses as any[];
-    const targetClassIds = followingClassesList.map((c) => c._id);
+    const followingClassesList = (user.followingClasses || []) as any[];
+
+    // GVCN luôn thấy lớp mình chủ nhiệm: tìm hồ sơ Teacher trùng email với User,
+    // rồi lấy các lớp có Class.teacher trỏ tới hồ sơ đó (không cần admin gán tay).
+    const teacherProfiles = await Teacher.find({ email: String(user.email || '').toLowerCase().trim() })
+      .select('_id')
+      .lean();
+    const homeroomClasses =
+      teacherProfiles.length > 0
+        ? await Class.find({ teacher: { $in: teacherProfiles.map((t) => t._id) } })
+            .select('_id')
+            .lean()
+        : [];
+
+    const targetClassIds = Array.from(
+      new Map(
+        [...followingClassesList, ...homeroomClasses].map((c) => [String(c._id), c._id])
+      ).values()
+    );
 
     if (targetClassIds.length === 0) {
       return res.status(200).json({

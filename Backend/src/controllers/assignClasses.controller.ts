@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
+import Organization from '../models/Organization';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -15,11 +16,28 @@ export const index = async (req: Request, res: Response) => {
     // Lấy danh sách tất cả các Class ID đang được yêu cầu xử lý
     const classIdsInPayload = assignments.map((item) => item.classId);
 
-    // Tìm tất cả user và GỠ (PULL) các classId này ra khỏi followingClasses của họ.
-    // Điều này đảm bảo: Nếu Lớp 10A trước đây của User A, nay gán cho User B,
-    // thì User A sẽ mất Lớp 10A ngay lập tức.
+    // Chỉ gỡ khỏi các tài khoản CỜ ĐỎ, không đụng tới giáo viên/học sinh đang theo dõi lớp.
+    // Trong tổ chức: cờ đỏ là thành viên có role 'redflag'. Không có tổ chức: User.role = 'user'.
+    const organizationId = String(req.headers['x-organization-id'] || '').trim();
+    let redFlagFilter: Record<string, unknown> = { role: 'user' };
+
+    if (organizationId) {
+      const organization = await Organization.findById(organizationId).select('members').lean();
+      if (!organization) {
+        return res.status(404).json({ message: 'Không tìm thấy tổ chức' });
+      }
+
+      const redFlagIds = (organization.members || [])
+        .filter((member) => member.status === 'approved' && member.role === 'redflag')
+        .map((member) => member.user);
+
+      redFlagFilter = { _id: { $in: redFlagIds } };
+    }
+
+    // Điều này đảm bảo: Nếu Lớp 10A trước đây của cờ đỏ A, nay gán cho cờ đỏ B,
+    // thì A sẽ mất Lớp 10A ngay lập tức.
     await User.updateMany(
-      { followingClasses: { $in: classIdsInPayload } }, // Tìm những người đang giữ các lớp này
+      { ...redFlagFilter, followingClasses: { $in: classIdsInPayload } }, // Cờ đỏ đang giữ các lớp này
       { $pull: { followingClasses: { $in: classIdsInPayload } } } // Gỡ bỏ các lớp đó đi
     );
 
