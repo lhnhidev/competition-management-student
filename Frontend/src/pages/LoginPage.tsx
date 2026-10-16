@@ -12,7 +12,6 @@ const DEMO_ACCOUNTS = [
   { role: "Admin", email: "nhi@gmail.com" },
   { role: "Giáo viên", email: "Ntxuyen515@gmail.com" },
   { role: "Học sinh", email: "Nhi155413@gmail.com" },
-  { role: "Cờ đỏ", email: "danhaxaruomnic@gmail.com" },
 ];
 
 const LoginPage: React.FC = () => {
