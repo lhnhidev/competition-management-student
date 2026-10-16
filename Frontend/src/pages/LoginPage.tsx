@@ -6,7 +6,17 @@ import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
+const DEMO_PASSWORD = "123456";
+
+const DEMO_ACCOUNTS = [
+  { role: "Admin", email: "nhi@gmail.com" },
+  { role: "Giáo viên", email: "Ntxuyen515@gmail.com" },
+  { role: "Học sinh", email: "Nhi155413@gmail.com" },
+  { role: "Cờ đỏ", email: "danhaxaruomnic@gmail.com" },
+];
+
 const LoginPage: React.FC = () => {
+  const [form] = Form.useForm();
   const { request, error } = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -75,12 +85,41 @@ const LoginPage: React.FC = () => {
             </Text>
           </div>
 
-          {/* <div className="mb-5 text-center font-bold">
-            <p>Email: nhi@gmail.com</p>
-            <p>Mật khẩu: 123456</p>
-          </div> */}
+          {/* Demo Accounts */}
+          <div className="mb-6 rounded-lg border border-dashed border-[var(--primary-color)] bg-[var(--surface-2)] p-4">
+            <Text className="mb-1 block font-semibold !text-[var(--text-color)]">
+              Tài khoản demo
+            </Text>
+            <Text className="mb-3 block text-xs !text-[var(--text-muted)]">
+              Mật khẩu chung: <span className="font-semibold">{DEMO_PASSWORD}</span>
+              {" · "}Bấm vào tài khoản để tự điền
+            </Text>
+            <div className="flex flex-col gap-2">
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.email}
+                  type="button"
+                  onClick={() =>
+                    form.setFieldsValue({
+                      email: account.email,
+                      password: DEMO_PASSWORD,
+                    })
+                  }
+                  className="flex cursor-pointer items-center justify-between gap-3 rounded-md border border-[var(--border-color)] bg-[var(--surface-1)] px-3 py-2 text-left text-sm transition-colors hover:border-[var(--primary-color)]"
+                >
+                  <span className="font-semibold text-[var(--primary-color)]">
+                    {account.role}
+                  </span>
+                  <span className="truncate text-[var(--text-color)]">
+                    {account.email}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <Form
+            form={form}
             layout="vertical"
             onFinish={onFinish}
             size="large"
